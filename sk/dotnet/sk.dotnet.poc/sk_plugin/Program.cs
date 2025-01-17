@@ -22,6 +22,7 @@ var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
 
 // Add a plugin (the LightsPlugin class is defined below)
 kernel.Plugins.AddFromType<ComputerVisionPlugin>("ComputerVision");
+kernel.Plugins.AddFromType<AIReportPlugin>("AIReport");
 
 // Enable planning
 OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new()

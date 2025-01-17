@@ -22,7 +22,7 @@ namespace dotnet_plugin
 
         public async Task<IList<ReadResult>> ExecuteRead()
         {
-            Console.WriteLine("Azure Cognitive Services Computer Vision - .NET quickstart example");
+            Console.WriteLine("Azure Cognitive Services Computer Vision");
             Console.WriteLine();
 
             ComputerVisionClient client = Authenticate(endpoint, key);
