@@ -1,0 +1,1 @@
+﻿read pdf and generate html report. the report should be build using only <div> so that it can embeded in a html page. Make the html bootstrap and exteremely intuitive and modern. Use very sharp CSS and html

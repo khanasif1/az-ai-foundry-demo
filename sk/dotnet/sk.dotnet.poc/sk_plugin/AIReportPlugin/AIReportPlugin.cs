@@ -15,16 +15,20 @@ public class AIReportPlugin
 
     private const string API_KEY = "EwAfYEWgZWfzJwZjWgAcRnirKcEqZgJ6XjEUGeROrklnVMum3HiBJQQJ99ALACYeBjFXJ3w3AAAAACOGXzsT"; // Set your key here
 
-    private const string QUESTION = "Generate a small report for cost of staying in a hotel in sydney. Use html format to make it look good"; // Set your question here
+    //private const string QUESTION = "Generate a small report for cost of staying in a hotel in sydney. Use html format to make it look good"; // Set your question here
 
     private const string ENDPOINT = "https://ai-hub-demo-basemodel.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview";
 
     [KernelFunction("report_generation")]
-    [Description("Json or text will be received as input, convert it into html, Markup or text report to present to the users")]
+    [Description("used the data in  Kernelargument recieved from ComputerVisionPlugin next convert it into html, Markup or text report to present to the users")]
     [return: Description("The response will be of type report as html, Markup or text in form of string")]
 
-    public async Task<ReportModel?> GenerateReportAsync()
+    public async Task<ReportModel?> GenerateReportAsync(Kernel kernel)
     {
+        
+
+        //dynamic data = GlobalArgs._args;
+
         Console.WriteLine("Azure openAI Gpt4o for report generation");
         using (var httpClient = new HttpClient())
         {
@@ -47,8 +51,7 @@ public class AIReportPlugin
                       content = new object[] {
                           new {
                               type = "text",
-                              text = QUESTION
-                          }
+                              text = kernel.Data["page"]                          }
                       }
                   }
                 },
