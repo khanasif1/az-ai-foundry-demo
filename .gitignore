@@ -2,4 +2,5 @@ venv/
 .vs/
 obj/
 bin/
-App.config
+App.*
+/sk/dotnet/sk.dotnet.poc/sk_plugin/App.config
