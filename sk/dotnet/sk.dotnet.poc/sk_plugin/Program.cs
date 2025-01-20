@@ -28,7 +28,7 @@ var metricsProvider = Sdk.CreateMeterProviderBuilder()
     .AddAzureMonitorMetricExporter();
 
 //read configuration value form app.config
-var occupation = System.Configuration.ConfigurationManager.AppSettings;
+var _appsetting = System.Configuration.ConfigurationManager.AppSettings;
 
 // Create a new logger factory.
 // It is important to keep the LoggerFactory instance active throughout the process lifetime.
@@ -39,7 +39,7 @@ var loggerFactory = LoggerFactory.Create(builder =>
     {
         logging.AddAzureMonitorLogExporter(options =>
         {
-            options.ConnectionString = occupation[0];
+            options.ConnectionString = _appsetting[0];
         });
     });
 });
@@ -49,7 +49,7 @@ var loggerFactory = LoggerFactory.Create(builder =>
 // Populate values from your OpenAI deployment
 var modelId = "gpt-4o";
 var endpoint = "https://ai-hub-demo-basemodel.openai.azure.com/";
-var apiKey = "EwAfYEWgZWfzJwZjWgAcRnirKcEqZgJ6XjEUGeROrklnVMum3HiBJQQJ99ALACYeBjFXJ3w3AAAAACOGXzsT";
+var apiKey = _appsetting[1];
 
 // Create a kernel with Azure OpenAI chat completion
 var builder = Kernel.CreateBuilder().AddAzureOpenAIChatCompletion(modelId, endpoint, apiKey);
