@@ -2,3 +2,4 @@ venv/
 .vs/
 obj/
 bin/
+App.config
