@@ -1,1 +1,2 @@
-﻿read pdf and generate html report. the report should be build using only <div> so that it can embeded in a html page. Make the html bootstrap and exteremely intuitive and modern. Use very sharp CSS and html
+﻿Option 1: read pdf and generate html report. the report should be build using only <div> so that it can embeded in a html page. Make the html bootstrap and exteremely intuitive and modern. Use very sharp CSS and html
+Option 2: read pdf and generate a html report with modern html UI using bootstrap. The report should have a high quality user experience. It should have header banner and footer information. All the cost breakdown should be create with quick to understand experience and clean html user interface.
