@@ -1,6 +1,8 @@
-venv/
 .vs/
 obj/
 bin/
 App.*
 /sk/dotnet/sk.dotnet.poc/sk_plugin/App.config
+.venv/
+.env
+__pycache__/
