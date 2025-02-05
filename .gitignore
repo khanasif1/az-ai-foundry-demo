@@ -6,5 +6,4 @@ App.*
 .venv/
 .env
 __pycache__/
-appsettings.json
-
+/sk/dotnet/sk.dotnet.poc/sk.api/appsettings.json
