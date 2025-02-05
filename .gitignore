@@ -6,3 +6,5 @@ App.*
 .venv/
 .env
 __pycache__/
+appsettings.json
+

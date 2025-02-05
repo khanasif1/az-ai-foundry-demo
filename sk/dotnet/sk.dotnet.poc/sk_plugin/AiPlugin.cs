@@ -20,44 +20,15 @@ public class AiPlugin
     private readonly IChatCompletionService chatCompletionService;
     private readonly ChatHistory history;
     private readonly OpenAIPromptExecutionSettings openAIPromptExecutionSettings;
+    private readonly IConfiguration configuration;
 
-    public AiPlugin()
+    public AiPlugin(IConfiguration _configuration)
     {
-        //// Create a new tracer provider builder and add an Azure Monitor trace exporter to the tracer provider builder.
-        //// It is important to keep the TracerProvider instance active throughout the process lifetime.
-        //// See https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/trace#tracerprovider-management
-        //tracerProvider = Sdk.CreateTracerProviderBuilder()
-        //    .AddAzureMonitorTraceExporter()
-        //    .Build();
-
-        //// Add an Azure Monitor metric exporter to the metrics provider builder.
-        //// It is important to keep the MetricsProvider instance active throughout the process lifetime.
-        //// See https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/metrics#meterprovider-management
-        //metricsProvider = Sdk.CreateMeterProviderBuilder()
-        //    .AddAzureMonitorMetricExporter()
-        //    .Build();
-
-        //// Read configuration value from app.config
-        //var _appsetting = System.Configuration.ConfigurationManager.AppSettings;
-
-        //// Create a new logger factory.
-        //// It is important to keep the LoggerFactory instance active throughout the process lifetime.
-        //// See https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/logs#logger-management
-        //loggerFactory = LoggerFactory.Create(builder =>
-        //{
-        //    builder.AddOpenTelemetry(logging =>
-        //    {
-        //        logging.AddAzureMonitorLogExporter(options =>
-        //        {
-        //            options.ConnectionString = _appsetting[0];
-        //        });
-        //    });
-        //});
-
+        configuration = _configuration;
         // Populate values from your OpenAI deployment
         var modelId = "gpt-4o";
         var endpoint = "https://ai-hub-demo-basemodel.openai.azure.com/";
-        var apiKey = "EwAfYEWgZWfzJwZjWgAcRnirKcEqZgJ6XjEUGeROrklnVMum3HiBJQQJ99ALACYeBjFXJ3w3AAAAACOGXzsT";//_appsetting[1];
+        var apiKey = _configuration["AppSettings:gpt-apikey"];
 
         // Create a kernel with Azure OpenAI chat completion
         var kernelBuilder = Kernel.CreateBuilder().AddAzureOpenAIChatCompletion(modelId, endpoint, apiKey);
@@ -83,7 +54,7 @@ public class AiPlugin
         history = new ChatHistory();
     }
 
-    public async Task CallAiOrchestrator(string userInput)
+    public async Task<ChatMessageContent> CallAiOrchestrator(string userInput, string filepath)
     {
         // Add user input
         history.AddUserMessage(userInput);
@@ -92,11 +63,23 @@ public class AiPlugin
         if (!kernel.Data.ContainsKey("CustomSetting"))
             kernel.Data.Add("CustomSetting", "This is a custom setting");
 
+        if (!kernel.Data.ContainsKey("filePath"))
+        {
+            kernel.Data.Remove("filePath");
+            kernel.Data.Add("filePath", filepath);
+        }
+        if (!kernel.Data.ContainsKey("configuration"))
+        {
+            kernel.Data.Remove("configuration");
+            kernel.Data.Add("configuration", configuration);
+        }
+
         // Get the response from the AI
         var result = await chatCompletionService.GetChatMessageContentAsync(
             history,
             executionSettings: openAIPromptExecutionSettings,
             kernel: kernel
         );
+        return result;
     }
 }

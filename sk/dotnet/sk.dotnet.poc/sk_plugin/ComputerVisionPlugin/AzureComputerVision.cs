@@ -5,22 +5,40 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Threading;
-using System.Linq;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Specialized;
+using Azure.Storage.Blobs.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace dotnet_plugin
 {
     internal class AzureComputerVision
     {
         // Add your Computer Vision key and endpoint
-        static string key = "FDQGHx2nrS9VvYVpMFRkZBQPsiewAGNF4NLRsX9IkCxXLAozIoRuJQQJ99ALACYeBjFXJ3w3AAAFACOGQL8n";//Environment.GetEnvironmentVariable("VISION_KEY");
-        static string endpoint = "https://demo-ocr-computer-vision.cognitiveservices.azure.com/";//Environment.GetEnvironmentVariable("VISION_ENDPOINT");
+        static string key = string.Empty;
+        static string endpoint = string.Empty;
 
-        private const string READ_TEXT_URL_IMAGE = "Asif DL.pdf";
-        private List<string> lines = new List<string>();
 
-        public async Task<IList<ReadResult>> ExecuteRead()
+
+        string storageAccountName = "skdocumentintelligence";
+        string containerName = "sk-document-intelligence-demo";
+                
+        string sasToken = string.Empty;
+
+        private readonly IConfiguration _configuration;
+        public AzureComputerVision(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            sasToken = _configuration["AppSettings:gpt-apikey"];
+            key = _configuration["AppSettings:vision-key"];
+            endpoint = _configuration["AppSettings:vision-endpoint"];
+            if (string.IsNullOrEmpty(sasToken) || string.IsNullOrEmpty(key) || string.IsNullOrEmpty(endpoint))
+            {
+                throw new InvalidOperationException("Storage sasToken, or Vision key or endpoint is not set in the configuration");
+            }
+        }
+
+        public async Task<IList<ReadResult>> ExecuteRead(string pdfPath)
         {
             Console.WriteLine("Azure Cognitive Services Computer Vision");
             Console.WriteLine();
@@ -28,8 +46,8 @@ namespace dotnet_plugin
             ComputerVisionClient client = Authenticate(endpoint, key);
 
             // Extract text (OCR) from a URL image using the Read API
-            var azureComputerVision = new AzureComputerVision();
-            return azureComputerVision.ExtractTextFromPDF(client).GetAwaiter().GetResult();
+            var azureComputerVision = new AzureComputerVision(_configuration);
+            return azureComputerVision.ExtractTextFromPDF(client, pdfPath).GetAwaiter().GetResult();
         }
 
         public static ComputerVisionClient Authenticate(string endpoint, string key)
@@ -40,11 +58,19 @@ namespace dotnet_plugin
             return client;
         }
 
-        public async Task<IList<ReadResult>> ExtractTextFromPDF(ComputerVisionClient client)
+        public async Task<IList<ReadResult>> ExtractTextFromPDF(ComputerVisionClient client, string pdfPath)
         {
             //string pdfPath = "Asif DL.pdf";
-            string pdfPath = "SK_Invoice.pdf";
-            using (var stream = new FileStream(pdfPath, FileMode.Open))
+            string blobName = "SK_Invoice.pdf";
+
+
+            string blobUrl = pdfPath;
+
+            string outputFilePath = Path.Combine(Directory.GetCurrentDirectory(), blobName);
+
+            await DownloadBlobAsync($"{blobUrl}?{sasToken}", outputFilePath);
+
+            using (var stream = new FileStream(blobName, FileMode.Open))
             {
                 var textHeaders = await client.ReadInStreamAsync(stream);
                 string operationLocation = textHeaders.OperationLocation;
@@ -77,6 +103,28 @@ namespace dotnet_plugin
                 //}
                 //return lines;
                 return textUrlFileResults;
+            }
+        }
+
+        static async Task DownloadBlobAsync(string blobUrl, string filePath)
+        {
+            try
+            {
+                // Create BlobClient using the blob URL (SAS Token included)
+                BlobClient blobClient = new BlobClient(new Uri(blobUrl));
+
+                // Download Blob and Save to FileStream
+                using (BlobDownloadInfo download = await blobClient.DownloadAsync())
+                using (FileStream fileStream = File.OpenWrite(filePath))
+                {
+                    await download.Content.CopyToAsync(fileStream);
+                }
+
+                Console.WriteLine($"File downloaded successfully: {filePath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error downloading blob: {ex.Message}");
             }
         }
     }
