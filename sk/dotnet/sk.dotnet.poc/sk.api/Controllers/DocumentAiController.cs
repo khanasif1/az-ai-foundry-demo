@@ -27,9 +27,10 @@ namespace sk.api.Controllers
             AiPlugin aiPlugin = new AiPlugin(_configuration);
             //"read pdf and generate a html report with modern html UI using bootstrap. The report should have a high quality user experience. It should have header banner and footer information. All the cost breakdown should be create with quick to understand experience and clean html user interface."
             var result = await aiPlugin.CallAiOrchestrator(prompt, filePath);
-            //var htmlResponse = result.Content.;
+            string _result =  result.ToString().Replace("html","");
+
             return result.ToString().Replace("```", "");
+
         }
     }
 }
-//```html </ html >```

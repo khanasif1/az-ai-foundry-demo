@@ -3,6 +3,7 @@ import streamlit as st
 import requests
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
+import streamlit.components.v1 as components
 
 # Load environment variables
 load_dotenv()
@@ -68,9 +69,14 @@ if uploaded_file is not None:
                 response = requests.get(f'{API_URL}?prompt={user_text}&filePath={blob_url}')
 
                 if response.status_code == 200:
-                    st.success("API call successful!")
-                    st.markdown(response.json(), unsafe_allow_html=True)
-                    st.json(response.json())  # Display API response
+                    # st.success("API call successful!")
+                    print(response.content)
+                    html_response = response.content
+                    html_response = html_response.decode('utf-8') if isinstance(html_response, bytes) else html_response
+                    html_response = html_response.replace('\\n', '\n').strip("'")
+                    components.html(html_response, height=800, scrolling=True)
+                    # st.html(response.content)
+                    # st.json(response.json())  # Display API response
                     
                 else:
                     st.error(f"API call failed: {response.status_code}")
