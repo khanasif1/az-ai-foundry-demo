@@ -24,7 +24,7 @@ async def main():
     # Add Azure OpenAI chat completion
     chat_completion = AzureChatCompletion(
         deployment_name="gpt-4o-mini",
-        api_key="EwAfYEWgZWfzJwZjWgAcRnirKcEqZgJ6XjEUGeROrklnVMum3HiBJQQJ99ALACYeBjFXJ3w3AAAAACOGXzsT",
+        api_key="your_api_key",
         base_url="https://ai-hub-demo-basemodel.openai.azure.com/",
     )
     kernel.add_service(chat_completion)
