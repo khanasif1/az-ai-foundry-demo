@@ -14,7 +14,7 @@ namespace ComputerVisionQuickstart
     class Program
     {
         // Add your Computer Vision key and endpoint
-        static string key = "FDQGHx2nrS9VvYVpMFRkZBQPsiewAGNF4NLRsX9IkCxXLAozIoRuJQQJ99ALACYeBjFXJ3w3AAAFACOGQL8n";//Environment.GetEnvironmentVariable("VISION_KEY");
+        static string key = "enter your key";//Environment.GetEnvironmentVariable("VISION_KEY");
         static string endpoint = "https://demo-ocr-computer-vision.cognitiveservices.azure.com/";//Environment.GetEnvironmentVariable("VISION_ENDPOINT");
 
         private const string READ_TEXT_URL_IMAGE = "SK_Invoice.pdf";//"Asif DL.pdf";//"https://raw.githubusercontent.com/Azure-Samples/cognitive-services-sample-data-files/master/ComputerVision/Images/printed_text.jpg";
